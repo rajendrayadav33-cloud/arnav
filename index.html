@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>To-Do List with Live Countdown Timer</title>
+    <title>Task Manager with Live Countdown Timer</title>
     <style>
         * {
             margin: 0;
@@ -24,10 +24,8 @@
             --success: #10b981;
             --warning: #f59e0b;
             --overdue: #f87171;
-            --countdown-bg: #0f172a;
         }
 
-        /* Light Theme */
         body.light {
             --bg: #f5f7fa;
             --card: #ffffff;
@@ -39,10 +37,8 @@
             --success: #10b981;
             --warning: #f59e0b;
             --overdue: #dc2626;
-            --countdown-bg: #f1f5f9;
         }
 
-        /* Blue Theme */
         body.blue {
             --bg: #e0f2fe;
             --card: #ffffff;
@@ -54,10 +50,8 @@
             --success: #10b981;
             --warning: #f59e0b;
             --overdue: #dc2626;
-            --countdown-bg: #f0f9ff;
         }
 
-        /* Purple Theme */
         body.purple {
             --bg: #1a1025;
             --card: #2d1b3d;
@@ -69,10 +63,8 @@
             --success: #10b981;
             --warning: #f59e0b;
             --overdue: #f87171;
-            --countdown-bg: #1a1025;
         }
 
-        /* Green Theme */
         body.green {
             --bg: #0f1a12;
             --card: #1a2e1f;
@@ -84,13 +76,12 @@
             --success: #4ade80;
             --warning: #fbbf24;
             --overdue: #f87171;
-            --countdown-bg: #0f1a12;
         }
 
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
             min-height: 100vh;
         }
@@ -129,14 +120,7 @@
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            font-weight: bold;
-            color: white;
             cursor: pointer;
-        }
-
-        .profile-info {
-            display: flex;
-            flex-direction: column;
         }
 
         .profile-name {
@@ -150,26 +134,13 @@
             color: var(--primary);
         }
 
-        .search-section {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
         .search-box {
             padding: 10px 15px;
             border-radius: 10px;
             border: 1px solid var(--border);
             background: var(--bg);
             color: var(--text);
-            font-size: 14px;
             width: 250px;
-        }
-
-        .search-box:focus {
-            outline: none;
-            border-color: var(--primary);
         }
 
         .theme-switcher {
@@ -188,10 +159,6 @@
             font-size: 12px;
         }
 
-        .theme-btn:hover {
-            transform: scale(1.05);
-        }
-
         /* Stats */
         .stats {
             display: flex;
@@ -206,7 +173,6 @@
             border-radius: 15px;
             text-align: center;
             flex: 1;
-            min-width: 100px;
         }
 
         .stat-number {
@@ -228,12 +194,6 @@
         .quote-text {
             font-size: 18px;
             font-style: italic;
-            margin-bottom: 10px;
-        }
-
-        .quote-author {
-            font-size: 14px;
-            opacity: 0.9;
         }
 
         /* Alert Settings */
@@ -243,13 +203,9 @@
             border-radius: 15px;
             margin-bottom: 20px;
             display: flex;
-            align-items: center;
             gap: 15px;
             flex-wrap: wrap;
-        }
-
-        .alert-settings label {
-            font-weight: bold;
+            align-items: center;
         }
 
         .alert-settings select {
@@ -260,7 +216,7 @@
             border: 1px solid var(--border);
         }
 
-        /* Add Task */
+        /* Add Task Form */
         .add-task {
             background: var(--card);
             padding: 20px;
@@ -287,6 +243,7 @@
 
         .add-task select {
             flex: 1;
+            min-width: 100px;
         }
 
         .add-task button {
@@ -297,20 +254,16 @@
             font-weight: bold;
         }
 
-        .add-task button:hover {
-            background: var(--primary-hover);
-        }
-
         .datetime-group {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
             flex: 2;
+            flex-wrap: wrap;
         }
 
         .datetime-group input, .datetime-group select {
             flex: 1;
-            min-width: 80px;
+            min-width: 90px;
         }
 
         /* Filters */
@@ -403,11 +356,11 @@
             color: var(--warning);
         }
 
-        /* COUNTDOWN TIMER - NEW STYLE */
-        .countdown-section {
-            background: var(--countdown-bg);
+        /* Countdown Timer */
+        .countdown-box {
+            background: var(--bg);
             border-radius: 12px;
-            padding: 12px 20px;
+            padding: 10px 20px;
             min-width: 180px;
             text-align: center;
             border: 1px solid var(--border);
@@ -416,35 +369,22 @@
         .countdown-label {
             font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 1px;
             color: var(--warning);
-            margin-bottom: 5px;
         }
 
-        .countdown-timer {
+        .countdown-value {
             font-size: 20px;
             font-weight: bold;
-            font-family: 'Courier New', monospace;
-            letter-spacing: 1px;
+            font-family: monospace;
         }
 
-        .countdown-timer.urgent {
-            color: #ef4444;
-            animation: pulse 1s infinite;
-        }
-
-        .countdown-timer.warning {
-            color: #f59e0b;
-        }
-
-        .countdown-timer.good {
-            color: #10b981;
-        }
+        .countdown-value.urgent { color: #ef4444; animation: pulse 1s infinite; }
+        .countdown-value.warning { color: #f59e0b; }
+        .countdown-value.good { color: #10b981; }
 
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .task-actions {
@@ -458,10 +398,6 @@
             font-size: 20px;
             cursor: pointer;
             padding: 5px;
-        }
-
-        .task-actions button:hover {
-            transform: scale(1.1);
         }
 
         .tick-btn { color: var(--success); }
@@ -485,24 +421,19 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: var(--card);
-            color: var(--text);
             padding: 20px 40px;
             border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            z-index: 1000;
             text-align: center;
+            z-index: 1000;
             border: 2px solid var(--primary);
         }
 
         @media (max-width: 768px) {
             .add-task { flex-direction: column; }
-            .task-card { flex-direction: column; align-items: stretch; }
+            .task-card { flex-direction: column; }
             .datetime-group { flex-direction: column; }
             .search-box { width: 100%; }
-            .stats { gap: 10px; }
-            .stat-card { padding: 10px; }
-            .stat-number { font-size: 20px; }
-            .countdown-section { width: 100%; }
+            .countdown-box { width: 100%; }
         }
     </style>
 </head>
@@ -512,20 +443,20 @@
     <div class="header">
         <div class="profile">
             <div class="avatar" id="avatar">👤</div>
-            <div class="profile-info">
-                <span class="profile-name" id="profileName">Your Name</span>
-                <span class="edit-profile" id="editProfileBtn">✏️ Edit Profile</span>
+            <div>
+                <div class="profile-name" id="profileName">Your Name</div>
+                <div class="edit-profile" id="editProfileBtn">✏️ Edit Profile</div>
             </div>
         </div>
-        <div class="search-section">
+        <div>
             <input type="text" id="searchBox" class="search-box" placeholder="🔍 Search tasks...">
-            <div class="theme-switcher">
-                <button class="theme-btn" data-theme="dark">🌙 Dark</button>
-                <button class="theme-btn" data-theme="light">☀️ Light</button>
-                <button class="theme-btn" data-theme="blue">💙 Blue</button>
-                <button class="theme-btn" data-theme="purple">💜 Purple</button>
-                <button class="theme-btn" data-theme="green">💚 Green</button>
-            </div>
+        </div>
+        <div class="theme-switcher">
+            <button class="theme-btn" data-theme="dark">🌙 Dark</button>
+            <button class="theme-btn" data-theme="light">☀️ Light</button>
+            <button class="theme-btn" data-theme="blue">💙 Blue</button>
+            <button class="theme-btn" data-theme="purple">💜 Purple</button>
+            <button class="theme-btn" data-theme="green">💚 Green</button>
         </div>
     </div>
 
@@ -545,22 +476,22 @@
 
     <!-- Alert Settings -->
     <div class="alert-settings">
-        <label>⏰ Alert:</label>
+        <label>⏰ Alert before:</label>
         <select id="defaultAlertTime">
-            <option value="10">10 min before</option>
-            <option value="20">20 min before</option>
-            <option value="30">30 min before</option>
-            <option value="40">40 min before</option>
-            <option value="60">1 hour before</option>
-            <option value="120">2 hours before</option>
-            <option value="180">3 hours before</option>
+            <option value="10">10 minutes</option>
+            <option value="20">20 minutes</option>
+            <option value="30">30 minutes</option>
+            <option value="40">40 minutes</option>
+            <option value="60">1 hour</option>
+            <option value="120">2 hours</option>
+            <option value="180">3 hours</option>
         </select>
         <label>🔊 Sound:</label>
         <select id="soundEnabled">
             <option value="yes">On</option>
             <option value="no">Off</option>
         </select>
-        <label>🕒 IST:</label>
+        <label>🕒 IST Time:</label>
         <span id="currentTimeIST"></span>
     </div>
 
@@ -580,8 +511,34 @@
         </select>
         <div class="datetime-group">
             <input type="date" id="taskDate">
-            <select id="taskHour"></select>
-            <select id="taskMinute"></select>
+            <select id="taskHour">
+                <option value="1">01</option><option value="2">02</option><option value="3">03</option>
+                <option value="4">04</option><option value="5">05</option><option value="6">06</option>
+                <option value="7">07</option><option value="8">08</option><option value="9">09</option>
+                <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+            </select>
+            <select id="taskMinute">
+                <option value="0">00</option><option value="1">01</option><option value="2">02</option>
+                <option value="3">03</option><option value="4">04</option><option value="5">05</option>
+                <option value="6">06</option><option value="7">07</option><option value="8">08</option>
+                <option value="9">09</option><option value="10">10</option><option value="11">11</option>
+                <option value="12">12</option><option value="13">13</option><option value="14">14</option>
+                <option value="15">15</option><option value="16">16</option><option value="17">17</option>
+                <option value="18">18</option><option value="19">19</option><option value="20">20</option>
+                <option value="21">21</option><option value="22">22</option><option value="23">23</option>
+                <option value="24">24</option><option value="25">25</option><option value="26">26</option>
+                <option value="27">27</option><option value="28">28</option><option value="29">29</option>
+                <option value="30">30</option><option value="31">31</option><option value="32">32</option>
+                <option value="33">33</option><option value="34">34</option><option value="35">35</option>
+                <option value="36">36</option><option value="37">37</option><option value="38">38</option>
+                <option value="39">39</option><option value="40">40</option><option value="41">41</option>
+                <option value="42">42</option><option value="43">43</option><option value="44">44</option>
+                <option value="45">45</option><option value="46">46</option><option value="47">47</option>
+                <option value="48">48</option><option value="49">49</option><option value="50">50</option>
+                <option value="51">51</option><option value="52">52</option><option value="53">53</option>
+                <option value="54">54</option><option value="55">55</option><option value="56">56</option>
+                <option value="57">57</option><option value="58">58</option><option value="59">59</option>
+            </select>
             <select id="taskAMPM">
                 <option value="AM">AM</option>
                 <option value="PM">PM</option>
@@ -613,128 +570,6 @@
         { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" }
     ];
 
-    // ========== COUNTDOWN FUNCTION ==========
-    function getTimeLeft(targetDateTime) {
-        if (!targetDateTime) return { text: "No deadline", class: "good" };
-        
-        const now = new Date();
-        const istNow = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
-        const target = new Date(targetDateTime);
-        
-        if (isNaN(target.getTime())) return { text: "Invalid date", class: "good" };
-        
-        const diffMs = target - istNow;
-        
-        if (diffMs <= 0) return { text: "⏰ Overdue!", class: "urgent" };
-        
-        const diffSeconds = Math.floor(diffMs / 1000);
-        const diffMinutes = Math.floor(diffSeconds / 60);
-        const diffHours = Math.floor(diffMinutes / 60);
-        const diffDays = Math.floor(diffHours / 24);
-        
-        let text = "";
-        let statusClass = "good";
-        
-        if (diffDays > 0) {
-            text = `${diffDays}d ${diffHours % 24}h ${diffMinutes % 60}m`;
-            if (diffDays <= 1) statusClass = "warning";
-            else statusClass = "good";
-        } 
-        else if (diffHours > 0) {
-            text = `${diffHours}h ${diffMinutes % 60}m ${diffSeconds % 60}s`;
-            if (diffHours <= 2) statusClass = "warning";
-            else statusClass = "good";
-        }
-        else if (diffMinutes > 0) {
-            text = `${diffMinutes}m ${diffSeconds % 60}s`;
-            if (diffMinutes <= 30) statusClass = "urgent";
-            else if (diffMinutes <= 60) statusClass = "warning";
-            else statusClass = "good";
-        }
-        else {
-            text = `${diffSeconds}s`;
-            statusClass = "urgent";
-        }
-        
-        return { text, class: statusClass };
-    }
-
-    function showCelebrationPopup(taskTitle) {
-        const overlay = document.createElement('div');
-        overlay.className = 'popup-overlay';
-        const popup = document.createElement('div');
-        popup.className = 'popup-message';
-        popup.innerHTML = `
-            <div style="font-size: 50px;">🎉</div>
-            <div style="font-size: 20px; font-weight: bold; margin: 10px 0;">Congratulations!</div>
-            <div>You completed "${taskTitle}"</div>
-            <div style="margin-top: 10px; color: var(--success);">Keep it up! 🌟</div>
-        `;
-        document.body.appendChild(overlay);
-        document.body.appendChild(popup);
-        setTimeout(() => { popup.remove(); overlay.remove(); }, 2000);
-    }
-
-    function updateDailyQuote() {
-        const now = new Date();
-        const hoursSinceEpoch = Math.floor(now.getTime() / (1000 * 60 * 60));
-        const index = Math.floor(hoursSinceEpoch / 12) % quotes.length;
-        document.getElementById("quoteText").innerHTML = `"${quotes[index].text}"`;
-        document.getElementById("quoteAuthor").innerHTML = `- ${quotes[index].author}`;
-    }
-
-    function updateCurrentTimeIST() {
-        const now = new Date();
-        const options = { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-        document.getElementById("currentTimeIST").innerHTML = now.toLocaleString('en-IN', options);
-    }
-
-    function getTodayIST() {
-        const now = new Date();
-        const istDate = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
-        return `${istDate.getFullYear()}-${String(istDate.getMonth()+1).padStart(2,'0')}-${String(istDate.getDate()).padStart(2,'0')}`;
-    }
-
-    function formatToIST(datetimeStr) {
-        if (!datetimeStr) return "No time set";
-        try {
-            const date = new Date(datetimeStr);
-            const options = { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true };
-            return date.toLocaleString('en-IN', options);
-        } catch(e) { return datetimeStr; }
-    }
-
-    // Initialize hour/minute dropdowns
-    function initTimeSelectors() {
-        const hourSelect = document.getElementById("taskHour");
-        hourSelect.innerHTML = '<option value="">Hour</option>';
-        for (let i = 1; i <= 12; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i.toString().padStart(2, '0');
-            hourSelect.appendChild(option);
-        }
-        
-        const minuteSelect = document.getElementById("taskMinute");
-        minuteSelect.innerHTML = '<option value="">Min</option>';
-        for (let i = 0; i < 60; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i.toString().padStart(2, '0');
-            minuteSelect.appendChild(option);
-        }
-        
-        const now = new Date();
-        const istNow = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
-        let hour = istNow.getHours();
-        let ampm = "AM";
-        if (hour >= 12) { ampm = "PM"; if (hour > 12) hour -= 12; }
-        if (hour === 0) { hour = 12; ampm = "AM"; }
-        document.getElementById("taskHour").value = hour;
-        document.getElementById("taskMinute").value = istNow.getMinutes();
-        document.getElementById("taskAMPM").value = ampm;
-    }
-
     // ========== DATA ==========
     let tasks = [];
     let currentFilter = "all";
@@ -742,24 +577,128 @@
     let profile = { name: "Your Name", avatar: "👤" };
     let defaultAlertMinutes = 10;
     let soundEnabled = true;
-    let countdownInterval = null;
 
-    // Load/Save
-    function loadData() {
-        const savedTasks = localStorage.getItem("todoTasks");
-        const savedProfile = localStorage.getItem("todoProfile");
-        const savedAlert = localStorage.getItem("defaultAlertMinutes");
-        const savedSound = localStorage.getItem("soundEnabled");
+    // ========== HELPER FUNCTIONS ==========
+    function getISTNow() {
+        return new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    }
+
+    function formatIST(date) {
+        if (!date) return "No time set";
+        try {
+            return new Date(date).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+        } catch(e) { return date; }
+    }
+
+    function getTodayIST() {
+        const now = getISTNow();
+        return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    }
+
+    function getTimeLeftText(datetime) {
+        if (!datetime) return { text: "No deadline", class: "good" };
         
-        if (savedTasks) tasks = JSON.parse(savedTasks);
-        if (savedProfile) profile = JSON.parse(savedProfile);
-        if (savedAlert) defaultAlertMinutes = parseInt(savedAlert);
-        if (savedSound) soundEnabled = savedSound === "yes";
+        const now = getISTNow();
+        const target = new Date(datetime);
         
-        document.getElementById("profileName").innerText = profile.name;
-        document.getElementById("avatar").innerHTML = profile.avatar;
-        document.getElementById("defaultAlertTime").value = defaultAlertMinutes;
-        document.getElementById("soundEnabled").value = soundEnabled ? "yes" : "no";
+        if (isNaN(target.getTime())) return { text: "Invalid", class: "good" };
+        
+        const diffMs = target - now;
+        if (diffMs <= 0) return { text: "⏰ OVERDUE!", class: "urgent" };
+        
+        const seconds = Math.floor(diffMs / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        
+        let text = "";
+        let statusClass = "good";
+        
+        if (days > 0) {
+            text = `${days}d ${hours % 24}h ${minutes % 60}m`;
+            statusClass = days <= 1 ? "warning" : "good";
+        } else if (hours > 0) {
+            text = `${hours}h ${minutes % 60}m ${seconds % 60}s`;
+            statusClass = hours <= 2 ? "warning" : "good";
+        } else if (minutes > 0) {
+            text = `${minutes}m ${seconds % 60}s`;
+            statusClass = minutes <= 30 ? "urgent" : "warning";
+        } else {
+            text = `${seconds}s`;
+            statusClass = "urgent";
+        }
+        
+        return { text, class: statusClass };
+    }
+
+    function showCelebration(taskTitle) {
+        const overlay = document.createElement('div');
+        overlay.className = 'popup-overlay';
+        const popup = document.createElement('div');
+        popup.className = 'popup-message';
+        popup.innerHTML = `<div style="font-size:50px;">🎉</div><div style="font-size:20px;margin:10px 0;">Congratulations!</div><div>Completed: ${taskTitle}</div>`;
+        document.body.appendChild(overlay);
+        document.body.appendChild(popup);
+        setTimeout(() => { popup.remove(); overlay.remove(); }, 2000);
+    }
+
+    function updateQuote() {
+        const now = new Date();
+        const index = Math.floor(now.getTime() / (1000 * 60 * 60 * 12)) % quotes.length;
+        document.getElementById("quoteText").innerHTML = `"${quotes[index].text}"`;
+        document.getElementById("quoteAuthor").innerHTML = `- ${quotes[index].author}`;
+    }
+
+    function updateClock() {
+        const now = getISTNow();
+        document.getElementById("currentTimeIST").innerHTML = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    }
+
+    function isOverdue(task) {
+        if (!task.datetime || task.completed) return false;
+        return new Date(task.datetime) < getISTNow();
+    }
+
+    function updateStats() {
+        document.getElementById("totalTasks").innerText = tasks.length;
+        document.getElementById("completedTasks").innerText = tasks.filter(t => t.completed).length;
+        document.getElementById("pendingTasks").innerText = tasks.filter(t => !t.completed).length;
+        document.getElementById("overdueTasks").innerText = tasks.filter(t => !t.completed && isOverdue(t)).length;
+    }
+
+    function playSound() {
+        if (!soundEnabled) return;
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 880;
+            gain.gain.value = 0.3;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 1);
+            osc.stop(ctx.currentTime + 1);
+        } catch(e) {}
+    }
+
+    function checkAlerts() {
+        const now = getISTNow();
+        tasks.forEach(task => {
+            if (!task.completed && task.datetime && !task.alertTriggered) {
+                const taskTime = new Date(task.datetime);
+                const alertMin = task.customAlertMinutes || defaultAlertMinutes;
+                const diffMin = (taskTime - now) / (1000 * 60);
+                if (diffMin > 0 && diffMin <= alertMin) {
+                    if (Notification.permission === "granted") {
+                        new Notification("⏰ Task Reminder", { body: `"${task.title}" due in ${alertMin} minutes!` });
+                    }
+                    playSound();
+                    task.alertTriggered = true;
+                    saveTasks();
+                }
+            }
+        });
     }
 
     function saveTasks() {
@@ -771,76 +710,23 @@
         localStorage.setItem("todoProfile", JSON.stringify(profile));
     }
 
-    function saveAlertSettings() {
-        localStorage.setItem("defaultAlertMinutes", defaultAlertMinutes);
-        localStorage.setItem("soundEnabled", soundEnabled ? "yes" : "no");
-    }
-
-    function updateStats() {
-        const total = tasks.length;
-        const completed = tasks.filter(t => t.completed).length;
-        const pending = tasks.filter(t => !t.completed).length;
-        const overdue = tasks.filter(t => !t.completed && isOverdue(t)).length;
-        document.getElementById("totalTasks").innerText = total;
-        document.getElementById("completedTasks").innerText = completed;
-        document.getElementById("pendingTasks").innerText = pending;
-        document.getElementById("overdueTasks").innerText = overdue;
-    }
-
-    function isOverdue(task) {
-        if (!task.datetime || task.completed) return false;
-        const taskTime = new Date(task.datetime);
-        const now = new Date();
-        const istNow = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
-        return taskTime < istNow;
-    }
-
-    function playAlertSound() {
-        if (!soundEnabled) return;
-        try {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            oscillator.frequency.value = 880;
-            gainNode.gain.value = 0.3;
-            oscillator.start();
-            gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 1);
-            oscillator.stop(audioContext.currentTime + 1);
-        } catch(e) {}
-    }
-
-    function requestNotificationPermission() {
-        if ("Notification" in window && Notification.permission === "default") {
-            Notification.requestPermission();
-        }
-    }
-
-    function checkAlerts() {
-        const now = new Date();
-        const istNow = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+    function loadData() {
+        const saved = localStorage.getItem("todoTasks");
+        const savedProfile = localStorage.getItem("todoProfile");
+        const savedAlert = localStorage.getItem("defaultAlertMinutes");
+        const savedSound = localStorage.getItem("soundEnabled");
         
-        tasks.forEach(task => {
-            if (!task.completed && task.datetime && !task.alertTriggered) {
-                const taskTime = new Date(task.datetime);
-                const alertMinutes = task.customAlertMinutes || defaultAlertMinutes;
-                const diffMs = taskTime - istNow;
-                const alertMs = alertMinutes * 60 * 1000;
-                
-                if (diffMs > 0 && diffMs <= alertMs) {
-                    if (Notification.permission === "granted") {
-                        new Notification("⏰ Task Reminder", { body: `"${task.title}" is due in ${alertMinutes} minutes!` });
-                    }
-                    playAlertSound();
-                    task.alertTriggered = true;
-                    saveTasks();
-                }
-            }
-        });
+        if (saved) tasks = JSON.parse(saved);
+        if (savedProfile) profile = JSON.parse(savedProfile);
+        if (savedAlert) defaultAlertMinutes = parseInt(savedAlert);
+        if (savedSound) soundEnabled = savedSound === "yes";
+        
+        document.getElementById("profileName").innerText = profile.name;
+        document.getElementById("avatar").innerHTML = profile.avatar;
+        document.getElementById("defaultAlertTime").value = defaultAlertMinutes;
+        document.getElementById("soundEnabled").value = soundEnabled ? "yes" : "no";
     }
 
-    // Render tasks with live countdown
     function renderTasks() {
         const container = document.getElementById("taskList");
         let filtered = [...tasks];
@@ -852,36 +738,30 @@
         if (searchQuery.trim()) {
             filtered = filtered.filter(t => t.title.toLowerCase().includes(searchQuery.toLowerCase()));
         }
-
+        
         if (filtered.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:40px;">✨ No tasks found</div>`;
+            container.innerHTML = `<div style="text-align:center;padding:40px;">✨ No tasks found</div>`;
             return;
         }
-
+        
         container.innerHTML = filtered.map(task => {
-            const alertTime = task.customAlertMinutes || defaultAlertMinutes;
-            const alertDisplay = alertTime < 60 ? `${alertTime} min` : `${alertTime/60} hour`;
+            const timeLeft = getTimeLeftText(task.datetime);
             const priorityClass = task.priority === "High" ? "priority-high" : (task.priority === "Medium" ? "priority-medium" : "priority-low");
-            const timeLeft = getTimeLeft(task.datetime);
+            const alertTime = task.customAlertMinutes || defaultAlertMinutes;
             
             return `
-                <div class="task-card ${task.completed ? 'completed' : ''} ${!task.completed && isOverdue(task) ? 'overdue' : ''}" data-id="${task.id}">
+                <div class="task-card ${task.completed ? 'completed' : ''} ${!task.completed && isOverdue(task) ? 'overdue' : ''}">
                     <div class="task-info">
                         <div class="task-title">${escapeHtml(task.title)}</div>
                         <span class="task-category">${task.category}</span>
                         <span class="task-priority ${priorityClass}">${task.priority}</span>
-                        <div class="task-datetime">📅 ${formatToIST(task.datetime)}</div>
-                        <div class="task-datetime">⏰ Alert: ${alertDisplay} before</div>
+                        <div class="task-datetime">📅 ${formatIST(task.datetime)}</div>
+                        <div class="task-datetime">⏰ Alert: ${alertTime < 60 ? alertTime + ' min' : alertTime/60 + ' hour'} before</div>
                     </div>
-                    
-                    <!-- COUNTDOWN SECTION - RIGHT NEXT TO TASK -->
-                    <div class="countdown-section">
+                    <div class="countdown-box">
                         <div class="countdown-label">⏳ TIME LEFT</div>
-                        <div class="countdown-timer ${timeLeft.class}" id="countdown-${task.id}">
-                            ${timeLeft.text}
-                        </div>
+                        <div class="countdown-value ${timeLeft.class}" id="cd-${task.id}">${timeLeft.text}</div>
                     </div>
-                    
                     <div class="task-actions">
                         <button class="tick-btn" onclick="toggleComplete('${task.id}')">${task.completed ? '❌' : '✅'}</button>
                         <button class="edit-btn" onclick="editTask('${task.id}')">✏️</button>
@@ -890,38 +770,32 @@
                 </div>
             `;
         }).join("");
+        
         updateStats();
-        startCountdownUpdates();
+        startCountdownLoop();
     }
-
-    // Update all countdowns in real-time
+    
     function updateAllCountdowns() {
         tasks.forEach(task => {
             if (!task.completed) {
-                const countdownElement = document.getElementById(`countdown-${task.id}`);
-                if (countdownElement) {
-                    const timeLeft = getTimeLeft(task.datetime);
-                    countdownElement.innerHTML = timeLeft.text;
-                    countdownElement.className = `countdown-timer ${timeLeft.class}`;
+                const el = document.getElementById(`cd-${task.id}`);
+                if (el) {
+                    const timeLeft = getTimeLeftText(task.datetime);
+                    el.innerHTML = timeLeft.text;
+                    el.className = `countdown-value ${timeLeft.class}`;
                 }
             }
         });
     }
-
-    function startCountdownUpdates() {
+    
+    let countdownInterval = null;
+    function startCountdownLoop() {
         if (countdownInterval) clearInterval(countdownInterval);
-        countdownInterval = setInterval(() => {
-            updateAllCountdowns();
-        }, 1000);
+        countdownInterval = setInterval(updateAllCountdowns, 1000);
     }
 
     function escapeHtml(str) {
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
     }
 
     function addTask() {
@@ -932,16 +806,17 @@
         const hour = parseInt(document.getElementById("taskHour").value);
         const minute = document.getElementById("taskMinute").value;
         const ampm = document.getElementById("taskAMPM").value;
-
-        if (!title) { alert("Enter task title"); return; }
-        if (!date || !hour || !minute) { alert("Select date and time"); return; }
-
+        
+        if (!title) { alert("Please enter a task title"); return; }
+        if (!date) { alert("Please select a date"); return; }
+        if (!hour) { alert("Please select hour"); return; }
+        
         let hour24 = hour;
         if (ampm === "PM" && hour !== 12) hour24 = hour + 12;
         if (ampm === "AM" && hour === 12) hour24 = 0;
-
-        const datetime = `${date}T${String(hour24).padStart(2,'0')}:${minute}`;
-
+        
+        const datetime = `${date}T${String(hour24).padStart(2,'0')}:${minute.padStart(2,'0')}`;
+        
         tasks.unshift({
             id: Date.now().toString(),
             title, category, priority, datetime,
@@ -961,9 +836,7 @@
             task.completed = !task.completed;
             saveTasks();
             renderTasks();
-            if (!wasCompleted && task.completed) {
-                showCelebrationPopup(task.title);
-            }
+            if (!wasCompleted && task.completed) showCelebration(task.title);
         }
     };
 
@@ -971,19 +844,19 @@
         const task = tasks.find(t => t.id === id);
         if (!task) return;
         
-        const newTitle = prompt("Edit title:", task.title);
+        let newTitle = prompt("Edit title:", task.title);
         if (newTitle && newTitle.trim()) task.title = newTitle.trim();
         
-        const newCat = prompt("Category (Work/Personal/Study/Health):", task.category);
+        let newCat = prompt("Category (Work/Personal/Study/Health):", task.category);
         if (newCat && ["Work","Personal","Study","Health"].includes(newCat)) task.category = newCat;
         
-        const newPri = prompt("Priority (Low/Medium/High):", task.priority);
+        let newPri = prompt("Priority (Low/Medium/High):", task.priority);
         if (newPri && ["Low","Medium","High"].includes(newPri)) task.priority = newPri;
         
-        const newTime = prompt("Date & Time (YYYY-MM-DDTHH:MM) in IST:", task.datetime);
+        let newTime = prompt("Date & Time (YYYY-MM-DDTHH:MM) in IST:", task.datetime);
         if (newTime && newTime.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/)) task.datetime = newTime;
         
-        const newAlert = prompt("Alert minutes (10,20,30,40,60,120,180):", task.customAlertMinutes);
+        let newAlert = prompt("Alert minutes (10,20,30,40,60,120,180):", task.customAlertMinutes);
         if (newAlert && !isNaN(parseInt(newAlert))) task.customAlertMinutes = parseInt(newAlert);
         
         task.alertTriggered = false;
@@ -1000,4 +873,53 @@
     };
 
     function editProfile() {
-        const newName
+        let newName = prompt("Enter your name:", profile.name);
+        if (newName && newName.trim()) profile.name = newName.trim();
+        let newAvatar = prompt("Enter avatar emoji:", profile.avatar);
+        if (newAvatar && newAvatar.trim()) profile.avatar = newAvatar.trim();
+        saveProfile();
+        document.getElementById("profileName").innerText = profile.name;
+        document.getElementById("avatar").innerHTML = profile.avatar;
+    }
+
+    function setTheme(theme) {
+        document.body.classList.remove("light", "dark", "blue", "purple", "green");
+        document.body.classList.add(theme);
+        localStorage.setItem("todoTheme", theme);
+    }
+
+    function loadTheme() {
+        const saved = localStorage.getItem("todoTheme");
+        setTheme(saved || "dark");
+    }
+
+    // ========== INIT ==========
+    function init() {
+        loadData();
+        loadTheme();
+        updateQuote();
+        updateClock();
+        renderTasks();
+        
+        document.getElementById("taskDate").value = getTodayIST();
+        document.getElementById("addTaskBtn").onclick = addTask;
+        document.getElementById("editProfileBtn").onclick = editProfile;
+        document.getElementById("searchBox").oninput = (e) => { searchQuery = e.target.value; renderTasks(); };
+        document.getElementById("defaultAlertTime").onchange = (e) => { defaultAlertMinutes = parseInt(e.target.value); localStorage.setItem("defaultAlertMinutes", defaultAlertMinutes); };
+        document.getElementById("soundEnabled").onchange = (e) => { soundEnabled = e.target.value === "yes"; localStorage.setItem("soundEnabled", soundEnabled ? "yes" : "no"); };
+        
+        document.querySelectorAll(".theme-btn").forEach(btn => {
+            btn.onclick = () => setTheme(btn.getAttribute("data-theme"));
+        });
+        
+        document.querySelectorAll(".filter-btn").forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentFilter = btn.getAttribute("data-filter");
+                renderTasks();
+            };
+        });
+        
+        setInterval(updateClock, 1000);
+        set
