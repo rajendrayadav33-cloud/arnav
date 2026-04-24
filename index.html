@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IST To-Do List - Complete Working Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>To-Do List with Live Countdown Timer</title>
     <style>
         * {
             margin: 0;
@@ -24,6 +24,7 @@
             --success: #10b981;
             --warning: #f59e0b;
             --overdue: #f87171;
+            --countdown-bg: #0f172a;
         }
 
         /* Light Theme */
@@ -38,6 +39,7 @@
             --success: #10b981;
             --warning: #f59e0b;
             --overdue: #dc2626;
+            --countdown-bg: #f1f5f9;
         }
 
         /* Blue Theme */
@@ -52,6 +54,7 @@
             --success: #10b981;
             --warning: #f59e0b;
             --overdue: #dc2626;
+            --countdown-bg: #f0f9ff;
         }
 
         /* Purple Theme */
@@ -66,6 +69,7 @@
             --success: #10b981;
             --warning: #f59e0b;
             --overdue: #f87171;
+            --countdown-bg: #1a1025;
         }
 
         /* Green Theme */
@@ -80,17 +84,19 @@
             --success: #4ade80;
             --warning: #fbbf24;
             --overdue: #f87171;
+            --countdown-bg: #0f1a12;
         }
 
         body {
             background: var(--bg);
             color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             padding: 20px;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -334,7 +340,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            max-height: 500px;
+            max-height: 550px;
             overflow-y: auto;
         }
 
@@ -361,6 +367,7 @@
 
         .task-info {
             flex: 2;
+            min-width: 200px;
         }
 
         .task-title {
@@ -394,6 +401,50 @@
             font-size: 12px;
             margin-top: 5px;
             color: var(--warning);
+        }
+
+        /* COUNTDOWN TIMER - NEW STYLE */
+        .countdown-section {
+            background: var(--countdown-bg);
+            border-radius: 12px;
+            padding: 12px 20px;
+            min-width: 180px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .countdown-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--warning);
+            margin-bottom: 5px;
+        }
+
+        .countdown-timer {
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        .countdown-timer.urgent {
+            color: #ef4444;
+            animation: pulse 1s infinite;
+        }
+
+        .countdown-timer.warning {
+            color: #f59e0b;
+        }
+
+        .countdown-timer.good {
+            color: #10b981;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
         }
 
         .task-actions {
@@ -443,11 +494,15 @@
             border: 2px solid var(--primary);
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             .add-task { flex-direction: column; }
             .task-card { flex-direction: column; align-items: stretch; }
             .datetime-group { flex-direction: column; }
             .search-box { width: 100%; }
+            .stats { gap: 10px; }
+            .stat-card { padding: 10px; }
+            .stat-number { font-size: 20px; }
+            .countdown-section { width: 100%; }
         }
     </style>
 </head>
@@ -555,11 +610,55 @@
         { text: "The future depends on what you do today.", author: "Mahatma Gandhi" },
         { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
         { text: "Success is not final, failure is not fatal.", author: "Winston Churchill" },
-        { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
-        { text: "Everything you've ever wanted is on the other side of fear.", author: "George Addair" }
+        { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" }
     ];
 
-    // ========== HELPER FUNCTIONS ==========
+    // ========== COUNTDOWN FUNCTION ==========
+    function getTimeLeft(targetDateTime) {
+        if (!targetDateTime) return { text: "No deadline", class: "good" };
+        
+        const now = new Date();
+        const istNow = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+        const target = new Date(targetDateTime);
+        
+        if (isNaN(target.getTime())) return { text: "Invalid date", class: "good" };
+        
+        const diffMs = target - istNow;
+        
+        if (diffMs <= 0) return { text: "⏰ Overdue!", class: "urgent" };
+        
+        const diffSeconds = Math.floor(diffMs / 1000);
+        const diffMinutes = Math.floor(diffSeconds / 60);
+        const diffHours = Math.floor(diffMinutes / 60);
+        const diffDays = Math.floor(diffHours / 24);
+        
+        let text = "";
+        let statusClass = "good";
+        
+        if (diffDays > 0) {
+            text = `${diffDays}d ${diffHours % 24}h ${diffMinutes % 60}m`;
+            if (diffDays <= 1) statusClass = "warning";
+            else statusClass = "good";
+        } 
+        else if (diffHours > 0) {
+            text = `${diffHours}h ${diffMinutes % 60}m ${diffSeconds % 60}s`;
+            if (diffHours <= 2) statusClass = "warning";
+            else statusClass = "good";
+        }
+        else if (diffMinutes > 0) {
+            text = `${diffMinutes}m ${diffSeconds % 60}s`;
+            if (diffMinutes <= 30) statusClass = "urgent";
+            else if (diffMinutes <= 60) statusClass = "warning";
+            else statusClass = "good";
+        }
+        else {
+            text = `${diffSeconds}s`;
+            statusClass = "urgent";
+        }
+        
+        return { text, class: statusClass };
+    }
+
     function showCelebrationPopup(taskTitle) {
         const overlay = document.createElement('div');
         overlay.className = 'popup-overlay';
@@ -608,6 +707,7 @@
     // Initialize hour/minute dropdowns
     function initTimeSelectors() {
         const hourSelect = document.getElementById("taskHour");
+        hourSelect.innerHTML = '<option value="">Hour</option>';
         for (let i = 1; i <= 12; i++) {
             const option = document.createElement('option');
             option.value = i;
@@ -616,6 +716,7 @@
         }
         
         const minuteSelect = document.getElementById("taskMinute");
+        minuteSelect.innerHTML = '<option value="">Min</option>';
         for (let i = 0; i < 60; i++) {
             const option = document.createElement('option');
             option.value = i;
@@ -623,7 +724,6 @@
             minuteSelect.appendChild(option);
         }
         
-        // Set default hour to current IST hour
         const now = new Date();
         const istNow = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
         let hour = istNow.getHours();
@@ -642,6 +742,7 @@
     let profile = { name: "Your Name", avatar: "👤" };
     let defaultAlertMinutes = 10;
     let soundEnabled = true;
+    let countdownInterval = null;
 
     // Load/Save
     function loadData() {
@@ -739,6 +840,7 @@
         });
     }
 
+    // Render tasks with live countdown
     function renderTasks() {
         const container = document.getElementById("taskList");
         let filtered = [...tasks];
@@ -760,9 +862,10 @@
             const alertTime = task.customAlertMinutes || defaultAlertMinutes;
             const alertDisplay = alertTime < 60 ? `${alertTime} min` : `${alertTime/60} hour`;
             const priorityClass = task.priority === "High" ? "priority-high" : (task.priority === "Medium" ? "priority-medium" : "priority-low");
+            const timeLeft = getTimeLeft(task.datetime);
             
             return `
-                <div class="task-card ${task.completed ? 'completed' : ''} ${!task.completed && isOverdue(task) ? 'overdue' : ''}">
+                <div class="task-card ${task.completed ? 'completed' : ''} ${!task.completed && isOverdue(task) ? 'overdue' : ''}" data-id="${task.id}">
                     <div class="task-info">
                         <div class="task-title">${escapeHtml(task.title)}</div>
                         <span class="task-category">${task.category}</span>
@@ -770,6 +873,15 @@
                         <div class="task-datetime">📅 ${formatToIST(task.datetime)}</div>
                         <div class="task-datetime">⏰ Alert: ${alertDisplay} before</div>
                     </div>
+                    
+                    <!-- COUNTDOWN SECTION - RIGHT NEXT TO TASK -->
+                    <div class="countdown-section">
+                        <div class="countdown-label">⏳ TIME LEFT</div>
+                        <div class="countdown-timer ${timeLeft.class}" id="countdown-${task.id}">
+                            ${timeLeft.text}
+                        </div>
+                    </div>
+                    
                     <div class="task-actions">
                         <button class="tick-btn" onclick="toggleComplete('${task.id}')">${task.completed ? '❌' : '✅'}</button>
                         <button class="edit-btn" onclick="editTask('${task.id}')">✏️</button>
@@ -779,6 +891,28 @@
             `;
         }).join("");
         updateStats();
+        startCountdownUpdates();
+    }
+
+    // Update all countdowns in real-time
+    function updateAllCountdowns() {
+        tasks.forEach(task => {
+            if (!task.completed) {
+                const countdownElement = document.getElementById(`countdown-${task.id}`);
+                if (countdownElement) {
+                    const timeLeft = getTimeLeft(task.datetime);
+                    countdownElement.innerHTML = timeLeft.text;
+                    countdownElement.className = `countdown-timer ${timeLeft.class}`;
+                }
+            }
+        });
+    }
+
+    function startCountdownUpdates() {
+        if (countdownInterval) clearInterval(countdownInterval);
+        countdownInterval = setInterval(() => {
+            updateAllCountdowns();
+        }, 1000);
     }
 
     function escapeHtml(str) {
@@ -866,63 +1000,4 @@
     };
 
     function editProfile() {
-        const newName = prompt("Enter your name:", profile.name);
-        if (newName && newName.trim()) profile.name = newName.trim();
-        const newAvatar = prompt("Enter avatar emoji:", profile.avatar);
-        if (newAvatar && newAvatar.trim()) profile.avatar = newAvatar.trim();
-        saveProfile();
-        document.getElementById("profileName").innerText = profile.name;
-        document.getElementById("avatar").innerHTML = profile.avatar;
-    }
-
-    function setTheme(theme) {
-        document.body.classList.remove("light", "dark", "blue", "purple", "green");
-        document.body.classList.add(theme);
-        localStorage.setItem("todoTheme", theme);
-    }
-
-    function loadTheme() {
-        const saved = localStorage.getItem("todoTheme");
-        if (saved) setTheme(saved);
-        else setTheme("dark");
-    }
-
-    // ========== INITIALIZATION ==========
-    function init() {
-        loadData();
-        loadTheme();
-        initTimeSelectors();
-        updateDailyQuote();
-        updateCurrentTimeIST();
-        requestNotificationPermission();
-        
-        document.getElementById("taskDate").value = getTodayIST();
-        document.getElementById("addTaskBtn").onclick = addTask;
-        document.getElementById("editProfileBtn").onclick = editProfile;
-        document.getElementById("searchBox").oninput = (e) => { searchQuery = e.target.value; renderTasks(); };
-        document.getElementById("defaultAlertTime").onchange = (e) => { defaultAlertMinutes = parseInt(e.target.value); saveAlertSettings(); };
-        document.getElementById("soundEnabled").onchange = (e) => { soundEnabled = e.target.value === "yes"; saveAlertSettings(); };
-        
-        document.querySelectorAll(".theme-btn").forEach(btn => {
-            btn.onclick = () => setTheme(btn.getAttribute("data-theme"));
-        });
-        
-        document.querySelectorAll(".filter-btn").forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-                currentFilter = btn.getAttribute("data-filter");
-                renderTasks();
-            };
-        });
-        
-        renderTasks();
-        setInterval(updateCurrentTimeIST, 1000);
-        setInterval(checkAlerts, 30000);
-        setInterval(updateDailyQuote, 12 * 60 * 60 * 1000);
-    }
-    
-    init();
-</script>
-</body>
-</html>
+        const newName
