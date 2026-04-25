@@ -696,14 +696,27 @@ setTimeout(()=>{
 alert("Reminder: Before leaving website, click Backup to save your tasks.");
 },500);
 }
+
 document.querySelectorAll('.theme-btn').forEach(btn=>{
 btn.addEventListener('mousemove',e=>{
 const rect = btn.getBoundingClientRect();
-btn.style.setProperty('--x', (e.clientX - rect.left) + 'px');
-btn.style.setProperty('--y', (e.clientY - rect.top) + 'px');
+
+btn.style.setProperty('--x',(e.clientX - rect.left) + 'px');
+btn.style.setProperty('--y',(e.clientY - rect.top) + 'px');
+
 });
 });
+
 function init(){
+
+document.querySelectorAll('.theme-btn').forEach(btn=>{
+btn.addEventListener('mousemove',e=>{
+const rect = btn.getBoundingClientRect();
+btn.style.setProperty('--x',(e.clientX - rect.left)+'px');
+btn.style.setProperty('--y',(e.clientY - rect.top)+'px');
+});
+});
+
 initTimeSelectors();
 setTheme(localStorage.getItem("themev2") || "dark");
 renderTasks();
@@ -711,6 +724,7 @@ updateClock();
 startupReminder();
 
 setInterval(updateClock,1000);
+}
 
 document.getElementById("search").addEventListener("input",function(e){
 searchText=e.target.value.toLowerCase();
