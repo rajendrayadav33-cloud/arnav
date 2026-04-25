@@ -1,925 +1,586 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Task Manager with Live Countdown Timer</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Task Manager + Alarm</title>
 
-        /* Dark Theme (DEFAULT) */
-        body.dark {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --text: #f1f5f9;
-            --border: #334155;
-            --primary: #60a5fa;
-            --primary-hover: #3b82f6;
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --overdue: #f87171;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-        body.light {
-            --bg: #f5f7fa;
-            --card: #ffffff;
-            --text: #1e293b;
-            --border: #e2e8f0;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --overdue: #dc2626;
-        }
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+transition:.25s;
+}
 
-        body.blue {
-            --bg: #e0f2fe;
-            --card: #ffffff;
-            --text: #0c4a6e;
-            --border: #bae6fd;
-            --primary: #0284c7;
-            --primary-hover: #0369a1;
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --overdue: #dc2626;
-        }
+body{
+--bg:#0f172a;
+--card:#1e293b;
+--text:#f8fafc;
+--muted:#94a3b8;
+--primary:#38bdf8;
+--border:#334155;
+background:var(--bg);
+color:var(--text);
+padding:20px;
+min-height:100vh;
+}
 
-        body.purple {
-            --bg: #1a1025;
-            --card: #2d1b3d;
-            --text: #e9d5ff;
-            --border: #4c1d95;
-            --primary: #a855f7;
-            --primary-hover: #9333ea;
-            --danger: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --overdue: #f87171;
-        }
+/* Themes */
+body.light{--bg:#f8fafc;--card:#fff;--text:#111827;--muted:#64748b;--primary:#2563eb;--border:#e2e8f0;}
+body.blue{--bg:#082f49;--card:#075985;--text:#e0f2fe;--muted:#bae6fd;--primary:#38bdf8;--border:#0284c7;}
+body.purple{--bg:#2e1065;--card:#581c87;--text:#f3e8ff;--muted:#d8b4fe;--primary:#c084fc;--border:#7e22ce;}
+body.green{--bg:#052e16;--card:#14532d;--text:#dcfce7;--muted:#86efac;--primary:#22c55e;--border:#15803d;}
+body.red{--bg:#450a0a;--card:#7f1d1d;--text:#fee2e2;--muted:#fca5a5;--primary:#ef4444;--border:#b91c1c;}
+body.orange{--bg:#431407;--card:#9a3412;--text:#ffedd5;--muted:#fdba74;--primary:#f97316;--border:#ea580c;}
+body.pink{--bg:#500724;--card:#9d174d;--text:#fce7f3;--muted:#f9a8d4;--primary:#ec4899;--border:#db2777;}
 
-        body.green {
-            --bg: #0f1a12;
-            --card: #1a2e1f;
-            --text: #dcfce7;
-            --border: #166534;
-            --primary: #22c55e;
-            --primary-hover: #16a34a;
-            --danger: #ef4444;
-            --success: #4ade80;
-            --warning: #fbbf24;
-            --overdue: #f87171;
-        }
+.container{max-width:1300px;margin:auto;}
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
-            min-height: 100vh;
-        }
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+flex-wrap:wrap;
+padding:20px;
+background:var(--card);
+border:1px solid var(--border);
+border-radius:20px;
+margin-bottom:20px;
+}
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+.title{font-size:28px;font-weight:700;}
+.clock{color:var(--primary);font-size:14px;font-weight:600;}
 
-        /* Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 30px;
-            background: var(--card);
-            padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+.search{
+padding:12px;
+border:none;
+outline:none;
+border-radius:12px;
+background:var(--bg);
+color:var(--text);
+min-width:220px;
+}
 
-        .profile {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+.theme-box{display:flex;gap:8px;flex-wrap:wrap;}
 
-        .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
-        }
+.theme-btn{
+border:none;
+padding:10px 12px;
+border-radius:10px;
+cursor:pointer;
+background:var(--bg);
+color:var(--text);
+font-size:12px;
+font-weight:600;
+}
 
-        .profile-name {
-            font-size: 18px;
-            font-weight: bold;
-        }
+.quote,.box,.task{
+background:var(--card);
+border:1px solid var(--border);
+}
 
-        .edit-profile {
-            font-size: 12px;
-            cursor: pointer;
-            color: var(--primary);
-        }
+.quote{
+padding:18px;
+border-radius:18px;
+text-align:center;
+margin-bottom:20px;
+}
 
-        .search-box {
-            padding: 10px 15px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text);
-            width: 250px;
-        }
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+gap:15px;
+margin-bottom:20px;
+}
 
-        .theme-switcher {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+.box{
+padding:18px;
+border-radius:18px;
+text-align:center;
+}
 
-        .theme-btn {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            background: var(--bg);
-            color: var(--text);
-            font-size: 12px;
-        }
+.box h2{
+font-size:28px;
+color:var(--primary);
+}
 
-        /* Stats */
-        .stats {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+.form{
+display:grid;
+grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr auto;
+gap:10px;
+margin-bottom:20px;
+}
 
-        .stat-card {
-            background: var(--card);
-            padding: 15px 25px;
-            border-radius: 15px;
-            text-align: center;
-            flex: 1;
-        }
+.form input,.form select,.form button{
+padding:12px;
+border:none;
+border-radius:12px;
+outline:none;
+background:var(--bg);
+color:var(--text);
+}
 
-        .stat-number {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--primary);
-        }
+.form button{
+background:var(--primary);
+color:white;
+font-weight:700;
+cursor:pointer;
+}
 
-        /* Quote */
-        .quote-section {
-            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+.filters{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
 
-        .quote-text {
-            font-size: 18px;
-            font-style: italic;
-        }
+.filters button{
+padding:10px 16px;
+border:none;
+border-radius:30px;
+cursor:pointer;
+background:var(--card);
+color:var(--text);
+}
 
-        /* Alert Settings */
-        .alert-settings {
-            background: var(--card);
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+.filters .active{
+background:var(--primary);
+color:white;
+}
 
-        .alert-settings select {
-            padding: 8px;
-            border-radius: 8px;
-            background: var(--bg);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
+.task-list{
+display:flex;
+flex-direction:column;
+gap:14px;
+}
 
-        /* Add Task Form */
-        .add-task {
-            background: var(--card);
-            padding: 20px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
+.task{
+padding:16px;
+border-radius:18px;
+display:grid;
+grid-template-columns:2fr 1fr auto;
+gap:15px;
+align-items:center;
+border-left:5px solid var(--primary);
+}
 
-        .add-task input, .add-task select, .add-task button {
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            background: var(--bg);
-            color: var(--text);
-            font-size: 14px;
-        }
+.task.completed{
+opacity:.6;
+text-decoration:line-through;
+}
 
-        .add-task input {
-            flex: 2;
-            min-width: 150px;
-        }
+.name{
+font-size:18px;
+font-weight:600;
+margin-bottom:8px;
+}
 
-        .add-task select {
-            flex: 1;
-            min-width: 100px;
-        }
+.meta{
+font-size:13px;
+color:var(--muted);
+line-height:1.7;
+}
 
-        .add-task button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
+.timer{
+font-size:21px;
+font-weight:700;
+text-align:center;
+}
 
-        .datetime-group {
-            display: flex;
-            gap: 10px;
-            flex: 2;
-            flex-wrap: wrap;
-        }
+.good{color:#22c55e;}
+.warn{color:#f59e0b;}
+.bad{color:#ef4444;}
 
-        .datetime-group input, .datetime-group select {
-            flex: 1;
-            min-width: 90px;
-        }
+.actions{
+display:flex;
+gap:8px;
+}
 
-        /* Filters */
-        .filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+.actions button{
+border:none;
+padding:10px 12px;
+border-radius:10px;
+cursor:pointer;
+font-weight:700;
+}
 
-        .filter-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            background: var(--card);
-            color: var(--text);
-        }
+.done{background:#22c55e;color:white;}
+.edit{background:#6366f1;color:white;}
+.del{background:#ef4444;color:white;}
 
-        .filter-btn.active {
-            background: var(--primary);
-            color: white;
-        }
+.empty{
+text-align:center;
+padding:40px;
+opacity:.7;
+}
 
-        /* Task List */
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-height: 550px;
-            overflow-y: auto;
-        }
-
-        .task-card {
-            background: var(--card);
-            border-radius: 15px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
-            border-left: 5px solid var(--primary);
-        }
-
-        .task-card.completed {
-            opacity: 0.6;
-            text-decoration: line-through;
-        }
-
-        .task-card.overdue {
-            border-left-color: var(--overdue);
-        }
-
-        .task-info {
-            flex: 2;
-            min-width: 200px;
-        }
-
-        .task-title {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .task-category {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            background: var(--primary);
-            color: white;
-            margin-top: 5px;
-        }
-
-        .task-priority {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            margin-left: 8px;
-        }
-
-        .priority-high { background: #ef4444; color: white; }
-        .priority-medium { background: #f59e0b; color: white; }
-        .priority-low { background: #10b981; color: white; }
-
-        .task-datetime {
-            font-size: 12px;
-            margin-top: 5px;
-            color: var(--warning);
-        }
-
-        /* Countdown Timer */
-        .countdown-box {
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 10px 20px;
-            min-width: 180px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-
-        .countdown-label {
-            font-size: 10px;
-            text-transform: uppercase;
-            color: var(--warning);
-        }
-
-        .countdown-value {
-            font-size: 20px;
-            font-weight: bold;
-            font-family: monospace;
-        }
-
-        .countdown-value.urgent { color: #ef4444; animation: pulse 1s infinite; }
-        .countdown-value.warning { color: #f59e0b; }
-        .countdown-value.good { color: #10b981; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .task-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .task-actions button {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        .tick-btn { color: var(--success); }
-        .edit-btn { color: var(--primary); }
-        .delete-btn { color: var(--danger); }
-
-        /* Popup */
-        .popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-        }
-
-        .popup-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--card);
-            padding: 20px 40px;
-            border-radius: 20px;
-            text-align: center;
-            z-index: 1000;
-            border: 2px solid var(--primary);
-        }
-
-        @media (max-width: 768px) {
-            .add-task { flex-direction: column; }
-            .task-card { flex-direction: column; }
-            .datetime-group { flex-direction: column; }
-            .search-box { width: 100%; }
-            .countdown-box { width: 100%; }
-        }
-    </style>
+@media(max-width:1000px){
+.form{grid-template-columns:1fr;}
+.task{grid-template-columns:1fr;}
+.search{width:100%;}
+}
+</style>
 </head>
+
 <body class="dark">
 <div class="container">
-    <!-- Header -->
-    <div class="header">
-        <div class="profile">
-            <div class="avatar" id="avatar">👤</div>
-            <div>
-                <div class="profile-name" id="profileName">Your Name</div>
-                <div class="edit-profile" id="editProfileBtn">✏️ Edit Profile</div>
-            </div>
-        </div>
-        <div>
-            <input type="text" id="searchBox" class="search-box" placeholder="🔍 Search tasks...">
-        </div>
-        <div class="theme-switcher">
-            <button class="theme-btn" data-theme="dark">🌙 Dark</button>
-            <button class="theme-btn" data-theme="light">☀️ Light</button>
-            <button class="theme-btn" data-theme="blue">💙 Blue</button>
-            <button class="theme-btn" data-theme="purple">💜 Purple</button>
-            <button class="theme-btn" data-theme="green">💚 Green</button>
-        </div>
-    </div>
 
-    <!-- Quote -->
-    <div class="quote-section">
-        <div class="quote-text" id="quoteText">"The secret of getting ahead is getting started."</div>
-        <div class="quote-author" id="quoteAuthor">- Mark Twain</div>
-    </div>
+<div class="header">
+<div>
+<div class="title">⚡ Premium Task Manager</div>
+<div class="clock" id="clock"></div>
+</div>
 
-    <!-- Stats -->
-    <div class="stats">
-        <div class="stat-card"><div class="stat-number" id="totalTasks">0</div><div>Total</div></div>
-        <div class="stat-card"><div class="stat-number" id="completedTasks">0</div><div>Completed</div></div>
-        <div class="stat-card"><div class="stat-number" id="pendingTasks">0</div><div>Pending</div></div>
-        <div class="stat-card"><div class="stat-number" id="overdueTasks">0</div><div>Overdue</div></div>
-    </div>
+<input class="search" id="searchBox" placeholder="Search tasks...">
 
-    <!-- Alert Settings -->
-    <div class="alert-settings">
-        <label>⏰ Alert before:</label>
-        <select id="defaultAlertTime">
-            <option value="10">10 minutes</option>
-            <option value="20">20 minutes</option>
-            <option value="30">30 minutes</option>
-            <option value="40">40 minutes</option>
-            <option value="60">1 hour</option>
-            <option value="120">2 hours</option>
-            <option value="180">3 hours</option>
-        </select>
-        <label>🔊 Sound:</label>
-        <select id="soundEnabled">
-            <option value="yes">On</option>
-            <option value="no">Off</option>
-        </select>
-        <label>🕒 IST Time:</label>
-        <span id="currentTimeIST"></span>
-    </div>
+<div class="theme-box">
+<button class="theme-btn" onclick="theme('dark')">🌙</button>
+<button class="theme-btn" onclick="theme('light')">☀️</button>
+<button class="theme-btn" onclick="theme('blue')">💙</button>
+<button class="theme-btn" onclick="theme('purple')">💜</button>
+<button class="theme-btn" onclick="theme('green')">💚</button>
+<button class="theme-btn" onclick="theme('red')">❤️</button>
+<button class="theme-btn" onclick="theme('orange')">🧡</button>
+<button class="theme-btn" onclick="theme('pink')">💗</button>
+</div>
+</div>
 
-    <!-- Add Task -->
-    <div class="add-task">
-        <input type="text" id="taskTitle" placeholder="Task title...">
-        <select id="taskCategory">
-            <option value="Work">💼 Work</option>
-            <option value="Personal">🏠 Personal</option>
-            <option value="Study">📚 Study</option>
-            <option value="Health">💪 Health</option>
-        </select>
-        <select id="taskPriority">
-            <option value="Low">🟢 Low</option>
-            <option value="Medium" selected>🟡 Medium</option>
-            <option value="High">🔴 High</option>
-        </select>
-        <div class="datetime-group">
-            <input type="date" id="taskDate">
-            <select id="taskHour">
-                <option value="1">01</option><option value="2">02</option><option value="3">03</option>
-                <option value="4">04</option><option value="5">05</option><option value="6">06</option>
-                <option value="7">07</option><option value="8">08</option><option value="9">09</option>
-                <option value="10">10</option><option value="11">11</option><option value="12">12</option>
-            </select>
-            <select id="taskMinute">
-                <option value="0">00</option><option value="1">01</option><option value="2">02</option>
-                <option value="3">03</option><option value="4">04</option><option value="5">05</option>
-                <option value="6">06</option><option value="7">07</option><option value="8">08</option>
-                <option value="9">09</option><option value="10">10</option><option value="11">11</option>
-                <option value="12">12</option><option value="13">13</option><option value="14">14</option>
-                <option value="15">15</option><option value="16">16</option><option value="17">17</option>
-                <option value="18">18</option><option value="19">19</option><option value="20">20</option>
-                <option value="21">21</option><option value="22">22</option><option value="23">23</option>
-                <option value="24">24</option><option value="25">25</option><option value="26">26</option>
-                <option value="27">27</option><option value="28">28</option><option value="29">29</option>
-                <option value="30">30</option><option value="31">31</option><option value="32">32</option>
-                <option value="33">33</option><option value="34">34</option><option value="35">35</option>
-                <option value="36">36</option><option value="37">37</option><option value="38">38</option>
-                <option value="39">39</option><option value="40">40</option><option value="41">41</option>
-                <option value="42">42</option><option value="43">43</option><option value="44">44</option>
-                <option value="45">45</option><option value="46">46</option><option value="47">47</option>
-                <option value="48">48</option><option value="49">49</option><option value="50">50</option>
-                <option value="51">51</option><option value="52">52</option><option value="53">53</option>
-                <option value="54">54</option><option value="55">55</option><option value="56">56</option>
-                <option value="57">57</option><option value="58">58</option><option value="59">59</option>
-            </select>
-            <select id="taskAMPM">
-                <option value="AM">AM</option>
-                <option value="PM">PM</option>
-            </select>
-        </div>
-        <button id="addTaskBtn">➕ Add Task</button>
-    </div>
+<div class="quote" id="quote"></div>
 
-    <!-- Filters -->
-    <div class="filters">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="pending">Pending</button>
-        <button class="filter-btn" data-filter="completed">Completed</button>
-        <button class="filter-btn" data-filter="overdue">Overdue</button>
-    </div>
+<div class="stats">
+<div class="box"><h2 id="total">0</h2>Total</div>
+<div class="box"><h2 id="pending">0</h2>Pending</div>
+<div class="box"><h2 id="done">0</h2>Completed</div>
+<div class="box"><h2 id="late">0</h2>Overdue</div>
+</div>
 
-    <!-- Task List -->
-    <div id="taskList" class="task-list"></div>
+<div class="form">
+
+<input id="title" placeholder="Task title">
+
+<select id="category">
+<option>Study</option>
+<option>Work</option>
+<option>Health</option>
+<option>Personal</option>
+</select>
+
+<select id="priority">
+<option>Low</option>
+<option selected>Medium</option>
+<option>High</option>
+</select>
+
+<select id="alarmTime">
+<option value="10">10 Min Alarm</option>
+<option value="20">20 Min Alarm</option>
+<option value="30">30 Min Alarm</option>
+<option value="40">40 Min Alarm</option>
+<option value="60">1 Hour Alarm</option>
+</select>
+
+<input type="date" id="date">
+
+<select id="hour"></select>
+<select id="minute"></select>
+
+<select id="ampm">
+<option>AM</option>
+<option>PM</option>
+</select>
+
+<button onclick="addTask()">Add</button>
+
+</div>
+
+<div class="filters">
+<button class="active" onclick="setFilter('all',this)">All</button>
+<button onclick="setFilter('pending',this)">Pending</button>
+<button onclick="setFilter('completed',this)">Completed</button>
+<button onclick="setFilter('overdue',this)">Overdue</button>
+</div>
+
+<div class="task-list" id="list"></div>
+
 </div>
 
 <script>
-    // ========== QUOTES ==========
-    const quotes = [
-        { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
-        { text: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
-        { text: "The future depends on what you do today.", author: "Mahatma Gandhi" },
-        { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
-        { text: "Success is not final, failure is not fatal.", author: "Winston Churchill" },
-        { text: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" }
-    ];
+let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let filter = "all";
+let searchText = "";
+let ringing = false;
+let ringInterval = null;
 
-    // ========== DATA ==========
-    let tasks = [];
-    let currentFilter = "all";
-    let searchQuery = "";
-    let profile = { name: "Your Name", avatar: "👤" };
-    let defaultAlertMinutes = 10;
-    let soundEnabled = true;
+const quotes = [
+"Discipline beats motivation.",
+"Start now. Perfect later.",
+"Small progress is still progress.",
+"Focus creates success.",
+"Consistency wins everything."
+];
 
-    // ========== HELPER FUNCTIONS ==========
-    function getISTNow() {
-        return new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
-    }
+quote.innerText = quotes[Math.floor(Math.random()*quotes.length)];
 
-    function formatIST(date) {
-        if (!date) return "No time set";
-        try {
-            return new Date(date).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
-        } catch(e) { return date; }
-    }
+function fillTime(){
+for(let i=1;i<=12;i++){
+hour.innerHTML += `<option>${String(i).padStart(2,'0')}</option>`;
+}
+for(let i=0;i<60;i++){
+minute.innerHTML += `<option>${String(i).padStart(2,'0')}</option>`;
+}
+}
+fillTime();
 
-    function getTodayIST() {
-        const now = getISTNow();
-        return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    }
+function theme(name){
+document.body.className = name;
+localStorage.setItem("theme",name);
+}
+theme(localStorage.getItem("theme") || "dark");
 
-    function getTimeLeftText(datetime) {
-        if (!datetime) return { text: "No deadline", class: "good" };
-        
-        const now = getISTNow();
-        const target = new Date(datetime);
-        
-        if (isNaN(target.getTime())) return { text: "Invalid", class: "good" };
-        
-        const diffMs = target - now;
-        if (diffMs <= 0) return { text: "⏰ OVERDUE!", class: "urgent" };
-        
-        const seconds = Math.floor(diffMs / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
-        
-        let text = "";
-        let statusClass = "good";
-        
-        if (days > 0) {
-            text = `${days}d ${hours % 24}h ${minutes % 60}m`;
-            statusClass = days <= 1 ? "warning" : "good";
-        } else if (hours > 0) {
-            text = `${hours}h ${minutes % 60}m ${seconds % 60}s`;
-            statusClass = hours <= 2 ? "warning" : "good";
-        } else if (minutes > 0) {
-            text = `${minutes}m ${seconds % 60}s`;
-            statusClass = minutes <= 30 ? "urgent" : "warning";
-        } else {
-            text = `${seconds}s`;
-            statusClass = "urgent";
-        }
-        
-        return { text, class: statusClass };
-    }
+function save(){
+localStorage.setItem("tasks",JSON.stringify(tasks));
+}
 
-    function showCelebration(taskTitle) {
-        const overlay = document.createElement('div');
-        overlay.className = 'popup-overlay';
-        const popup = document.createElement('div');
-        popup.className = 'popup-message';
-        popup.innerHTML = `<div style="font-size:50px;">🎉</div><div style="font-size:20px;margin:10px 0;">Congratulations!</div><div>Completed: ${taskTitle}</div>`;
-        document.body.appendChild(overlay);
-        document.body.appendChild(popup);
-        setTimeout(() => { popup.remove(); overlay.remove(); }, 2000);
-    }
+function updateClock(){
+clock.innerText = new Date().toLocaleString("en-IN");
+}
+setInterval(updateClock,1000);
+updateClock();
 
-    function updateQuote() {
-        const now = new Date();
-        const index = Math.floor(now.getTime() / (1000 * 60 * 60 * 12)) % quotes.length;
-        document.getElementById("quoteText").innerHTML = `"${quotes[index].text}"`;
-        document.getElementById("quoteAuthor").innerHTML = `- ${quotes[index].author}`;
-    }
+searchBox.oninput = e=>{
+searchText = e.target.value.toLowerCase();
+render();
+};
 
-    function updateClock() {
-        const now = getISTNow();
-        document.getElementById("currentTimeIST").innerHTML = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-    }
+function addTask(){
 
-    function isOverdue(task) {
-        if (!task.datetime || task.completed) return false;
-        return new Date(task.datetime) < getISTNow();
-    }
+let t = title.value.trim();
+if(!t || !date.value){
+alert("Fill fields first 😑");
+return;
+}
 
-    function updateStats() {
-        document.getElementById("totalTasks").innerText = tasks.length;
-        document.getElementById("completedTasks").innerText = tasks.filter(t => t.completed).length;
-        document.getElementById("pendingTasks").innerText = tasks.filter(t => !t.completed).length;
-        document.getElementById("overdueTasks").innerText = tasks.filter(t => !t.completed && isOverdue(t)).length;
-    }
+let h = parseInt(hour.value);
+let m = minute.value;
+let ap = ampm.value;
 
-    function playSound() {
-        if (!soundEnabled) return;
-        try {
-            const ctx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.frequency.value = 880;
-            gain.gain.value = 0.3;
-            osc.start();
-            gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 1);
-            osc.stop(ctx.currentTime + 1);
-        } catch(e) {}
-    }
+if(ap==="PM" && h!==12) h += 12;
+if(ap==="AM" && h===12) h = 0;
 
-    function checkAlerts() {
-        const now = getISTNow();
-        tasks.forEach(task => {
-            if (!task.completed && task.datetime && !task.alertTriggered) {
-                const taskTime = new Date(task.datetime);
-                const alertMin = task.customAlertMinutes || defaultAlertMinutes;
-                const diffMin = (taskTime - now) / (1000 * 60);
-                if (diffMin > 0 && diffMin <= alertMin) {
-                    if (Notification.permission === "granted") {
-                        new Notification("⏰ Task Reminder", { body: `"${task.title}" due in ${alertMin} minutes!` });
-                    }
-                    playSound();
-                    task.alertTriggered = true;
-                    saveTasks();
-                }
-            }
-        });
-    }
+h = String(h).padStart(2,'0');
 
-    function saveTasks() {
-        localStorage.setItem("todoTasks", JSON.stringify(tasks));
-        updateStats();
-    }
+tasks.unshift({
+id:Date.now(),
+title:t,
+category:category.value,
+priority:priority.value,
+alarm:parseInt(alarmTime.value),
+datetime:`${date.value}T${h}:${m}`,
+completed:false,
+dismissed:false,
+alarmDone:false
+});
 
-    function saveProfile() {
-        localStorage.setItem("todoProfile", JSON.stringify(profile));
-    }
+title.value="";
+save();
+render();
+}
 
-    function loadData() {
-        const saved = localStorage.getItem("todoTasks");
-        const savedProfile = localStorage.getItem("todoProfile");
-        const savedAlert = localStorage.getItem("defaultAlertMinutes");
-        const savedSound = localStorage.getItem("soundEnabled");
-        
-        if (saved) tasks = JSON.parse(saved);
-        if (savedProfile) profile = JSON.parse(savedProfile);
-        if (savedAlert) defaultAlertMinutes = parseInt(savedAlert);
-        if (savedSound) soundEnabled = savedSound === "yes";
-        
-        document.getElementById("profileName").innerText = profile.name;
-        document.getElementById("avatar").innerHTML = profile.avatar;
-        document.getElementById("defaultAlertTime").value = defaultAlertMinutes;
-        document.getElementById("soundEnabled").value = soundEnabled ? "yes" : "no";
-    }
+function setFilter(type,btn){
+filter = type;
+document.querySelectorAll(".filters button").forEach(x=>x.classList.remove("active"));
+btn.classList.add("active");
+render();
+}
 
-    function renderTasks() {
-        const container = document.getElementById("taskList");
-        let filtered = [...tasks];
-        
-        if (currentFilter === "pending") filtered = filtered.filter(t => !t.completed);
-        if (currentFilter === "completed") filtered = filtered.filter(t => t.completed);
-        if (currentFilter === "overdue") filtered = filtered.filter(t => !t.completed && isOverdue(t));
-        
-        if (searchQuery.trim()) {
-            filtered = filtered.filter(t => t.title.toLowerCase().includes(searchQuery.toLowerCase()));
-        }
-        
-        if (filtered.length === 0) {
-            container.innerHTML = `<div style="text-align:center;padding:40px;">✨ No tasks found</div>`;
-            return;
-        }
-        
-        container.innerHTML = filtered.map(task => {
-            const timeLeft = getTimeLeftText(task.datetime);
-            const priorityClass = task.priority === "High" ? "priority-high" : (task.priority === "Medium" ? "priority-medium" : "priority-low");
-            const alertTime = task.customAlertMinutes || defaultAlertMinutes;
-            
-            return `
-                <div class="task-card ${task.completed ? 'completed' : ''} ${!task.completed && isOverdue(task) ? 'overdue' : ''}">
-                    <div class="task-info">
-                        <div class="task-title">${escapeHtml(task.title)}</div>
-                        <span class="task-category">${task.category}</span>
-                        <span class="task-priority ${priorityClass}">${task.priority}</span>
-                        <div class="task-datetime">📅 ${formatIST(task.datetime)}</div>
-                        <div class="task-datetime">⏰ Alert: ${alertTime < 60 ? alertTime + ' min' : alertTime/60 + ' hour'} before</div>
-                    </div>
-                    <div class="countdown-box">
-                        <div class="countdown-label">⏳ TIME LEFT</div>
-                        <div class="countdown-value ${timeLeft.class}" id="cd-${task.id}">${timeLeft.text}</div>
-                    </div>
-                    <div class="task-actions">
-                        <button class="tick-btn" onclick="toggleComplete('${task.id}')">${task.completed ? '❌' : '✅'}</button>
-                        <button class="edit-btn" onclick="editTask('${task.id}')">✏️</button>
-                        <button class="delete-btn" onclick="deleteTask('${task.id}')">🗑️</button>
-                    </div>
-                </div>
-            `;
-        }).join("");
-        
-        updateStats();
-        startCountdownLoop();
-    }
-    
-    function updateAllCountdowns() {
-        tasks.forEach(task => {
-            if (!task.completed) {
-                const el = document.getElementById(`cd-${task.id}`);
-                if (el) {
-                    const timeLeft = getTimeLeftText(task.datetime);
-                    el.innerHTML = timeLeft.text;
-                    el.className = `countdown-value ${timeLeft.class}`;
-                }
-            }
-        });
-    }
-    
-    let countdownInterval = null;
-    function startCountdownLoop() {
-        if (countdownInterval) clearInterval(countdownInterval);
-        countdownInterval = setInterval(updateAllCountdowns, 1000);
-    }
+function left(dt){
+let now = new Date();
+let target = new Date(dt);
+let diff = target-now;
 
-    function escapeHtml(str) {
-        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
-    }
+if(diff<=0) return {text:"OVERDUE",cls:"bad"};
 
-    function addTask() {
-        const title = document.getElementById("taskTitle").value.trim();
-        const category = document.getElementById("taskCategory").value;
-        const priority = document.getElementById("taskPriority").value;
-        const date = document.getElementById("taskDate").value;
-        const hour = parseInt(document.getElementById("taskHour").value);
-        const minute = document.getElementById("taskMinute").value;
-        const ampm = document.getElementById("taskAMPM").value;
-        
-        if (!title) { alert("Please enter a task title"); return; }
-        if (!date) { alert("Please select a date"); return; }
-        if (!hour) { alert("Please select hour"); return; }
-        
-        let hour24 = hour;
-        if (ampm === "PM" && hour !== 12) hour24 = hour + 12;
-        if (ampm === "AM" && hour === 12) hour24 = 0;
-        
-        const datetime = `${date}T${String(hour24).padStart(2,'0')}:${minute.padStart(2,'0')}`;
-        
-        tasks.unshift({
-            id: Date.now().toString(),
-            title, category, priority, datetime,
-            completed: false, alertTriggered: false,
-            customAlertMinutes: defaultAlertMinutes
-        });
-        
-        saveTasks();
-        document.getElementById("taskTitle").value = "";
-        renderTasks();
-    }
+let sec=Math.floor(diff/1000)%60;
+let min=Math.floor(diff/60000)%60;
+let hr=Math.floor(diff/3600000)%24;
+let day=Math.floor(diff/86400000);
 
-    window.toggleComplete = function(id) {
-        const task = tasks.find(t => t.id === id);
-        if (task) {
-            const wasCompleted = task.completed;
-            task.completed = !task.completed;
-            saveTasks();
-            renderTasks();
-            if (!wasCompleted && task.completed) showCelebration(task.title);
-        }
-    };
+let txt = day>0 ? `${day}d ${hr}h`
+: hr>0 ? `${hr}h ${min}m`
+: `${min}m ${sec}s`;
 
-    window.editTask = function(id) {
-        const task = tasks.find(t => t.id === id);
-        if (!task) return;
-        
-        let newTitle = prompt("Edit title:", task.title);
-        if (newTitle && newTitle.trim()) task.title = newTitle.trim();
-        
-        let newCat = prompt("Category (Work/Personal/Study/Health):", task.category);
-        if (newCat && ["Work","Personal","Study","Health"].includes(newCat)) task.category = newCat;
-        
-        let newPri = prompt("Priority (Low/Medium/High):", task.priority);
-        if (newPri && ["Low","Medium","High"].includes(newPri)) task.priority = newPri;
-        
-        let newTime = prompt("Date & Time (YYYY-MM-DDTHH:MM) in IST:", task.datetime);
-        if (newTime && newTime.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/)) task.datetime = newTime;
-        
-        let newAlert = prompt("Alert minutes (10,20,30,40,60,120,180):", task.customAlertMinutes);
-        if (newAlert && !isNaN(parseInt(newAlert))) task.customAlertMinutes = parseInt(newAlert);
-        
-        task.alertTriggered = false;
-        saveTasks();
-        renderTasks();
-    };
+let cls="good";
+if(day===0 && hr<3) cls="warn";
+if(day===0 && hr===0 && min<30) cls="bad";
 
-    window.deleteTask = function(id) {
-        if (confirm("Delete this task?")) {
-            tasks = tasks.filter(t => t.id !== id);
-            saveTasks();
-            renderTasks();
-        }
-    };
+return {text:txt,cls};
+}
 
-    function editProfile() {
-        let newName = prompt("Enter your name:", profile.name);
-        if (newName && newName.trim()) profile.name = newName.trim();
-        let newAvatar = prompt("Enter avatar emoji:", profile.avatar);
-        if (newAvatar && newAvatar.trim()) profile.avatar = newAvatar.trim();
-        saveProfile();
-        document.getElementById("profileName").innerText = profile.name;
-        document.getElementById("avatar").innerHTML = profile.avatar;
-    }
+function toggle(id){
+let task = tasks.find(x=>x.id==id);
+task.completed=!task.completed;
+save();
+render();
+}
 
-    function setTheme(theme) {
-        document.body.classList.remove("light", "dark", "blue", "purple", "green");
-        document.body.classList.add(theme);
-        localStorage.setItem("todoTheme", theme);
-    }
+function del(id){
+if(confirm("Delete task?")){
+tasks = tasks.filter(x=>x.id!=id);
+save();
+render();
+}
+}
 
-    function loadTheme() {
-        const saved = localStorage.getItem("todoTheme");
-        setTheme(saved || "dark");
-    }
+function editTask(id){
+let task = tasks.find(x=>x.id==id);
+let val = prompt("Edit task:",task.title);
+if(val && val.trim()){
+task.title = val.trim();
+save();
+render();
+}
+}
 
-    // ========== INIT ==========
-    function init() {
-        loadData();
-        loadTheme();
-        updateQuote();
-        updateClock();
-        renderTasks();
-        
-        document.getElementById("taskDate").value = getTodayIST();
-        document.getElementById("addTaskBtn").onclick = addTask;
-        document.getElementById("editProfileBtn").onclick = editProfile;
-        document.getElementById("searchBox").oninput = (e) => { searchQuery = e.target.value; renderTasks(); };
-        document.getElementById("defaultAlertTime").onchange = (e) => { defaultAlertMinutes = parseInt(e.target.value); localStorage.setItem("defaultAlertMinutes", defaultAlertMinutes); };
-        document.getElementById("soundEnabled").onchange = (e) => { soundEnabled = e.target.value === "yes"; localStorage.setItem("soundEnabled", soundEnabled ? "yes" : "no"); };
-        
-        document.querySelectorAll(".theme-btn").forEach(btn => {
-            btn.onclick = () => setTheme(btn.getAttribute("data-theme"));
-        });
-        
-        document.querySelectorAll(".filter-btn").forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-                currentFilter = btn.getAttribute("data-filter");
-                renderTasks();
-            };
-        });
-        
-        setInterval(updateClock, 1000);
-        set
+/* Alarm System */
+
+if("Notification" in window){
+Notification.requestPermission();
+}
+
+function startAlarm(task){
+
+if(ringing) return;
+ringing = true;
+
+if(Notification.permission==="granted"){
+new Notification("⏰ Reminder",{body:task.title+" is due soon!"});
+}
+
+ringInterval = setInterval(()=>{
+let audio = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
+audio.play();
+},2500);
+
+let pop = document.createElement("div");
+pop.id="alarmPopup";
+pop.style = `
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:#111827;
+color:white;
+padding:30px;
+border-radius:20px;
+z-index:9999;
+text-align:center;
+box-shadow:0 0 30px rgba(0,0,0,.4);
+`;
+
+pop.innerHTML = `
+<h2>⏰ Reminder</h2>
+<p style="margin:15px 0">${task.title}</p>
+<button onclick="dismissAlarm(${task.id})"
+style="padding:12px 20px;border:none;background:red;color:white;border-radius:10px;cursor:pointer;">
+Dismiss
+</button>
+`;
+
+document.body.appendChild(pop);
+}
+
+function dismissAlarm(id){
+let task = tasks.find(x=>x.id==id);
+if(task) task.dismissed = true;
+clearInterval(ringInterval);
+ringing=false;
+document.getElementById("alarmPopup")?.remove();
+save();
+}
+
+function checkAlarms(){
+
+let now = new Date();
+
+tasks.forEach(task=>{
+
+if(task.completed || task.dismissed || task.alarmDone) return;
+
+let target = new Date(task.datetime);
+let diff = (target-now)/60000;
+
+if(diff<=task.alarm && diff>0){
+task.alarmDone=true;
+save();
+startAlarm(task);
+}
+
+});
+
+}
+setInterval(checkAlarms,1000);
+
+function render(){
+
+let data=[...tasks];
+
+if(filter==="pending") data=data.filter(x=>!x.completed);
+if(filter==="completed") data=data.filter(x=>x.completed);
+if(filter==="overdue") data=data.filter(x=>!x.completed && new Date(x.datetime)<new Date());
+
+if(searchText){
+data=data.filter(x=>x.title.toLowerCase().includes(searchText));
+}
+
+total.innerText = tasks.length;
+done.innerText = tasks.filter(x=>x.completed).length;
+pending.innerText = tasks.filter(x=>!x.completed).length;
+late.innerText = tasks.filter(x=>!x.completed && new Date(x.datetime)<new Date()).length;
+
+if(data.length===0){
+list.innerHTML=`<div class="empty">No tasks found ✨</div>`;
+return;
+}
+
+list.innerHTML = data.map(t=>{
+
+let tm = left(t.datetime);
+
+return `
+<div class="task ${t.completed?'completed':''}">
+<div>
+<div class="name">${t.title}</div>
+<div class="meta">
+📁 ${t.category}<br>
+⭐ ${t.priority}<br>
+📅 ${new Date(t.datetime).toLocaleString("en-IN")}<br>
+🔔 Alarm: ${t.alarm} min before
+</div>
+</div>
+
+<div class="timer ${tm.cls}">
+${t.completed?'DONE ✅':tm.text}
+</div>
+
+<div class="actions">
+<button class="done" onclick="toggle(${t.id})">${t.completed?'Undo':'Done'}</button>
+<button class="edit" onclick="editTask(${t.id})">Edit</button>
+<button class="del" onclick="del(${t.id})">Delete</button>
+</div>
+</div>
+`;
+
+}).join("");
+
+}
+
+setInterval(render,1000);
+render();
+</script>
+</body>
+</html>
