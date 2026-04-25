@@ -66,6 +66,20 @@ body.purple{
 --border:#7e22ce;
 }
 
+body.violetblack{
+--bg:#0a0a0f;
+--card:#161622;
+--text:#f5f3ff;
+--muted:#b4a7d6;
+--primary:#a855f7;
+--danger:#ef4444;
+--success:#22c55e;
+--warn:#f59e0b;
+--border:#312e81;
+--glow-primary:0 0 20px rgba(168,85,247,0.45);
+--glow-card:0 0 15px rgba(168,85,247,0.18);
+}
+
 .container{
 max-width:1400px;
 margin:auto;
@@ -316,6 +330,7 @@ z-index:9998;
 <input class="search" id="search" placeholder="🔍 Search tasks...">
 
 <div class="theme-box">
+<button class="theme-btn" onclick="setTheme('violetblack')">💜 Violet Black</button>
 <button class="theme-btn" onclick="setTheme('dark')">🌙 Dark</button>
 <button class="theme-btn" onclick="setTheme('light')">☀️ Light</button>
 <button class="theme-btn" onclick="setTheme('green')">💚 Green</button>
