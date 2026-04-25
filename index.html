@@ -48,28 +48,6 @@ body.light{
 --glow-card:0 0 15px rgba(37,99,235,0.05);
 }
 
-body.green{
---bg:#052e16;
---card:#14532d;
---text:#dcfce7;
---muted:#86efac;
---primary:#22c55e;
---border:#166534;
---glow-primary:0 0 20px rgba(34,197,94,0.35);
---glow-card:0 0 15px rgba(34,197,94,0.15);
-}
-
-body.purple{
---bg:#2e1065;
---card:#581c87;
---text:#f3e8ff;
---muted:#d8b4fe;
---primary:#c084fc;
---border:#7e22ce;
---glow-primary:0 0 20px rgba(192,132,252,0.35);
---glow-card:0 0 15px rgba(192,132,252,0.15);
-}
-
 body.violet{
 --bg:#0a0a0f;
 --card:#161622;
@@ -212,6 +190,39 @@ cursor:pointer;
 background:var(--bg);
 color:var(--text);
 font-weight:600;
+position:relative;
+overflow:hidden;
+transition:0.3s;
+}
+.theme-btn:active{
+transform:scale(0.95);
+}
+.task:hover{
+transform:translateY(-4px);
+box-shadow:var(--glow-primary);
+transition:0.3s;
+}
+.theme-btn::before{
+content:'';
+position:absolute;
+top:var(--y);
+left:var(--x);
+width:0;
+height:0;
+background:radial-gradient(circle, rgba(255,255,255,0.35), transparent 60%);
+transform:translate(-50%,-50%);
+transition:width 0.25s,height 0.25s;
+pointer-events:none;
+}
+
+.theme-btn:hover::before{
+width:180px;
+height:180px;
+}
+
+.theme-btn:hover{
+transform:translateY(-3px);
+box-shadow:var(--glow-primary);
 }
 
 .search{
@@ -420,8 +431,6 @@ z-index:9998;
 <div class="theme-box">
 <button class="theme-btn" onclick="setTheme('dark')">🌙 Dark</button>
 <button class="theme-btn" onclick="setTheme('light')">☀️ Light</button>
-<button class="theme-btn" onclick="setTheme('green')">💚 Green</button>
-<button class="theme-btn" onclick="setTheme('purple')">💜 Purple</button>
 <button class="theme-btn" onclick="setTheme('violet')">💙 Violet</button>
 <button class="theme-btn" onclick="setTheme('rosegold')">🌹 Gold</button>
 <button class="theme-btn" onclick="setTheme('mintaura')">🌿 Mint</button>
@@ -687,7 +696,13 @@ setTimeout(()=>{
 alert("Reminder: Before leaving website, click Backup to save your tasks.");
 },500);
 }
-
+document.querySelectorAll('.theme-btn').forEach(btn=>{
+btn.addEventListener('mousemove',e=>{
+const rect = btn.getBoundingClientRect();
+btn.style.setProperty('--x', (e.clientX - rect.left) + 'px');
+btn.style.setProperty('--y', (e.clientY - rect.top) + 'px');
+});
+});
 function init(){
 initTimeSelectors();
 setTheme(localStorage.getItem("themev2") || "dark");
